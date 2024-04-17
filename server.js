@@ -3,7 +3,6 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const { Pool } = require('pg');
-const { Client } = require('pg');
 const app = express();
 const port = 3000;
 
@@ -25,18 +24,18 @@ const pool = new Pool({
   connectionTimeoutMillis: 5000,
 });
 
-/* const client = new Client({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-  connectionTimeoutMillis: 5000,
-}); */
-
-
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname + '/login.html'));
+  res.sendFile(path.join(__dirname + '/static/strona/login.html'));
+});
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname + '/static/strona/registration.html')); //post do dopisania
+});
+app.get('/home', (req, res) => {
+  res.redirect('/');
+});
+app.get('/', (req, res) => {
+  
+  res.sendFile(path.join(__dirname + '/static/strona/index.html'));
 });
 
 app.post('/auth', async (req, res) => {
