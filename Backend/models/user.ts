@@ -1,16 +1,17 @@
-import { relations, sql } from "drizzle-orm";
-import { integer, varchar, serial, pgTable, pgSchema, uuid } from "drizzle-orm/pg-core";
+
+import { integer, varchar, serial, pgTable, pgSchema, uuid, PgSerial } from "drizzle-orm/pg-core";
 import { Relation } from "drizzle-orm";
+import { roles } from "./role.js";
 
 export const userSchema = pgSchema("users");
 
 export const users = userSchema.table('users', {
-    uuid: serial('uuid').default(sql`gen_random_uuid()`).primaryKey(),
+    uuid: serial('uuid').primaryKey(), //CHANGE SERIAL TO UUID with random default
     name: varchar('name').notNull(),
     surname: varchar('surname').notNull(),
     email: varchar('email').unique().notNull(),
     password: varchar('password').notNull(),
-    //role: integer('role').references(() => role.id),
+    role: integer('role').references(() => roles.id),
 });
 
 /* export const userRelations = relations(users, ({one})=>({
