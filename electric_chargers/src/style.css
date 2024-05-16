@@ -1,4 +1,3 @@
-
 body {
     background-color: #82DEB0;
     height: auto;
@@ -66,7 +65,7 @@ p3 {
 }
 footer {
     clear: both;
-    background-color: #022F40;
+    background-color: #3fc1f0;
     float: left;
     width: 100%;
 }
@@ -110,3 +109,4 @@ button {
 button:hover {
     opacity: 0.8;
 }
+
