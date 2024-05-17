@@ -1,19 +1,19 @@
 {
-  "version": "5",
+  "version": "1",
   "dialect": "pg",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1715192952935,
-      "tag": "0000_hesitant_trish_tilby",
+      "when": 1715954695618,
+      "tag": "0000_damp_the_twelve",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "5",
-      "when": 1715278719988,
-      "tag": "0001_furry_preak",
+      "when": 1715954882649,
+      "tag": "0001_eager_guardsmen",
       "breakpoints": true
     }
   ]

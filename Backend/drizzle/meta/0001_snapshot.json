@@ -1,6 +1,6 @@
 {
-  "id": "47ea633b-116e-464b-a705-9550bf99168b",
-  "prevId": "dc64c362-deb7-41f5-ab98-58721e4ca253",
+  "id": "3aa75ec1-9f71-4a9d-a784-e4c1c0e24786",
+  "prevId": "dd799da6-4483-4484-b286-37b226d9a7c4",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -121,7 +121,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -218,9 +218,10 @@
       "columns": {
         "uuid": {
           "name": "uuid",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
@@ -250,7 +251,8 @@
           "name": "role",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": 3
         }
       },
       "indexes": {},

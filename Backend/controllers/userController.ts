@@ -95,7 +95,7 @@ userRouter.post('/auth/login', async (req, res) => {
         if (user.length > 0) {
             const isMatch = bcrypt.compareSync(password, user[0].password);
             if (isMatch) {
-                const token = await jwt.sign({ id: user[0].uuid }, JWT_SECRET, { expiresIn: 3600 });
+                const token = await jwt.sign({ id: user[0].uuid, role: user[0].role }, JWT_SECRET, { expiresIn: 3600 });
                 res.json({ user, token });
             } else {
                 return res.status(400).json({ error: 'Invalid credentials' });

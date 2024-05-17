@@ -1,0 +1,1 @@
+ALTER TABLE "users"."users" ALTER COLUMN "role" SET DEFAULT 3;

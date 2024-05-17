@@ -1,6 +1,7 @@
 import express, { json, urlencoded } from 'express';
 import session from 'express-session';
 import userRouter from "./controllers/userController.js";
+import localizationsRouter from "./controllers/localizationController.js";
 
 const app = express();
 const port = 3000;
@@ -15,8 +16,9 @@ app.use(session({
 	saveUninitialized: true
 }));
 
-
 app.use('/api/users', userRouter);
+app.use('/api/localizations', localizationsRouter);
+
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);

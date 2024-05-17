@@ -3,6 +3,7 @@ import Joi from 'joi';
 import db from '../config/db.config.js';
 import { localizations } from '../models/localization.js';
 import { eq, ilike } from 'drizzle-orm';
+import { isLoggedUser, isAdmin } from '../middleware/authMiddleware.js';
 const localizationsRouter = Router();
 const insertLocalization = async (localization) => {
     return db.insert(localizations).values(localization);
@@ -22,7 +23,7 @@ const updateLocalization = async (id, localization) => {
 const deleteLocalization = async (id) => {
     return db.delete().from(localizations).where(eq(localizations.id, id));
 };
-localizationsRouter.post('/', async (req, res) => {
+localizationsRouter.post('/add', isLoggedUser, isAdmin, async (req, res) => {
     try {
         let { display_name, street, city, postal_code, gps_lat, gps_long, isActive, description, res_start_date, res_end_date } = req.body;
         const schema = Joi.object({
@@ -53,3 +54,16 @@ localizationsRouter.post('/', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+localizationsRouter.get('/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        getLocalizationById(id).then((result) => {
+            res.json(result);
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+export default localizationsRouter;
