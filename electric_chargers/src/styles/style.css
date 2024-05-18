@@ -1,0 +1,196 @@
+
+/* *{
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--main-bg-color);
+}
+
+#root{
+    height: 100vh;
+    width: 100vw;
+    padding: 0%;
+    margin: 0%;
+}
+
+.menu{
+    height: 15vh;
+    background-color: var(--menubar-login-button-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.menu_bar ul {
+    display: flex;
+    gap: 1rem;
+}
+
+.menu_bar ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+}
+
+section{
+    width: 50%;
+    color: var(--input-label-color);
+}
+
+.mapa {
+    width: 45%;
+    height: 50vh;
+}
+
+footer {
+    background-color: var(--footer-color);
+    padding: 2rem 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+footer div h2 {
+    color: white;
+}
+
+footer div ul {
+    display: flex;
+    gap: 1rem;
+}
+
+footer div ul li img {
+    width: 24px;
+    height: 24px;
+} */
+
+
+
+*{
+    margin: 0 auto;
+}
+
+section{
+    --main-bg-color: #82DEB0;
+    --menubar-login-button-color: #022F40;
+    --footer-color: #3fc1f0;
+    --input-label-color: #F4D35E;
+
+    
+    padding: 0 8vh 0 0;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+}
+
+#root{
+    background-color: #82DEB0;
+    height: 100vh;
+    width: 100vw;
+    padding: 0%;
+    margin: 0%;
+}
+
+.menu{
+    height: 15vh;
+    background-color: #022F40;
+    display: flex; 
+    align-items: center;
+
+    overflow: hidden;
+    
+}
+
+#logo {
+    
+    height: 18vh;
+    border-radius: 100%;
+    float: left;
+
+  
+}
+
+.menu-bar {
+    float:right;
+}
+
+main{
+display: flex;
+padding: 6vh 8vw;
+
+}
+ 
+footer{
+    display: flex;
+    justify-content: space-around;
+    background-color: #022F40;
+    
+}
+footer div ul {
+    display: flex;
+    gap: 2vw; 
+    list-style: none;
+}
+
+
+
+footer div ul li img {
+    width: 100%;
+    height: 100%;
+    
+}
+
+
+
+/* *{
+    margin: 0 auto;
+}
+
+section{
+    --main-bg-color: #82DEB0;
+    --menubar-login-button-color: #022F40;
+    --footer-color: #3fc1f0;
+    --input-label-color: #F4D35E;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+}
+
+#root{
+    background-color: #82DEB0;
+    height: 100vh;
+    width: 100vw;
+    padding: 0%;
+    margin: 0%;
+}
+
+.menu{
+    height: 15vh;
+    background-color: #022F40;
+    display: flex;
+}
+
+#logo {
+    height: 15vh;
+    border-radius: 100%;
+    float: left;
+}
+
+.menu-bar {
+    float:right;
+}
+ */
