@@ -1,0 +1,32 @@
+.input{
+    margin-bottom: 10px;
+    text-align: center;
+}
+#nameVal{
+    margin-left: 10px;
+    border-radius: 3px;
+}
+#nameVal:hover{
+    background-color: lightgrey;
+}
+#emailVal{
+    margin-left: 108px;
+    border-radius: 3px;
+}
+#emailVal:hover{
+    background-color: lightgrey;
+}
+#passwordVal{
+    margin-left: 110px;
+    border-radius: 3px;
+}
+#passwordVal:hover{
+    background-color: lightgrey;
+}
+#passwordAgainVal{
+    margin-left: 53px;
+    border-radius: 3px;
+}
+#passwordAgainVal:hover{
+    background-color: lightgrey;
+}

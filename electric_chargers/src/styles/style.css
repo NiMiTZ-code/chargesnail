@@ -120,6 +120,18 @@ footer div ul li img {
 }
 
 
+#button{
+    text-align: center;
+    background-color: #022F40;
+    color: white;
+    border-radius: 5px;
+    border-color:  lightslategray;
+}
+#button:hover{
+    background-color: #3fc1f0;
+    color: black;
+}
+
 
 /* *{
     margin: 0 auto;

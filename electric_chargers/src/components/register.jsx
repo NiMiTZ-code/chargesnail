@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import "../styles/style.css";
+import "../styles/register.css";
 
 function Register() {
 
@@ -54,19 +55,25 @@ function Register() {
       <main>
         <div className="login-container">
           <form method="post">
-            <label htmlFor="uname"><b>Nazwa użytkownika</b></label>
-            <input type="text" placeholder="Wprowadź nazwę użytkownika" name="uname" required onChange={(e) => handleUsernameChange(e)} />
-
-            <label htmlFor="email"><b>Email</b></label>
-            <input type="text" placeholder="Wprowadź Email" name="email" required onChange={(e) => handleEmailChange(e)} />
-
-            <label htmlFor="psw"><b>Hasło</b></label>
-            <input type="password" placeholder="Wprowadź hasło" name="psw" required onChange={(e) => handlePasswordChange(e)} />
-
-            <label htmlFor="psw-repeat"><b>Powtórz hasło</b></label>
-            <input type="password" placeholder="Powtórz hasło" name="psw-repeat" required onChange={(e) => handleRepeatPasswordChange(e)} />
-
-            <button type="submit" onSubmit={(e) => handleSubmit(e)}>Zarejestruj się</button>
+            <div class='input'>
+              <label htmlFor="uname"><b>Nazwa użytkownika</b></label>
+              <input id='nameVal' type="text" placeholder="Wprowadź nazwę użytkownika" name="uname" required onChange={(e) => handleUsernameChange(e)} />
+            </div>
+            <div class='input'>
+              <label htmlFor="email"><b>Email</b></label>
+              <input id='emailVal' type="text" placeholder="Wprowadź Email" name="email" required onChange={(e) => handleEmailChange(e)} />
+            </div>
+            <div class='input'>
+              <label htmlFor="psw"><b>Hasło</b></label>
+              <input id='passwordVal' type="password" placeholder="Wprowadź hasło" name="psw" required onChange={(e) => handlePasswordChange(e)} />
+            </div>
+            <div class='input'>
+              <label htmlFor="psw-repeat"><b>Powtórz hasło</b></label>
+              <input id='passwordAgainVal' type="password" placeholder="Powtórz hasło" name="psw-repeat" required onChange={(e) => handleRepeatPasswordChange(e)} />
+            </div>
+            <div class='input'>
+            <button id='button' type="submit" onSubmit={(e) => handleSubmit(e)}>Zarejestruj się</button>
+            </div>
           </form>
         </div>
       </main>

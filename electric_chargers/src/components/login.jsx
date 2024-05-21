@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/style.css';
+import '../styles/login.css';
 import validator from "validator";
 import axios from "axios";
 
@@ -37,13 +38,17 @@ function Login() {
       <main>
         <div className="login-container">
           <form method="post">
-            <label htmlFor="uname"><b>Nazwa użytkownika</b></label>
-            <input type="text" placeholder="Wprowadź nazwę użytkownika" name="uname" required onChange={(e) => handleUsernameChange(e)} />
-
-            <label htmlFor="psw"><b>Hasło</b></label>
-            <input type="password" placeholder="Wprowadź hasło" name="psw" required onChange={(e) => handlePasswordChange(e)} />
-
-            <button type="submit" onSubmit={(e) => handleSubmit(e)}>Zaloguj się</button>
+            <div class='loginInput'>
+              <label htmlFor="uname"><b>Nazwa użytkownika</b></label>
+              <input id='logVal' type="text" placeholder="Wprowadź nazwę użytkownika" name="uname" required onChange={(e) => handleUsernameChange(e)} />
+            </div>
+            <div class='loginInput'>
+              <label htmlFor="psw"><b>Hasło</b></label>
+              <input id='passVal' type="password" placeholder="Wprowadź hasło" name="psw" required onChange={(e) => handlePasswordChange(e)} />
+            </div>
+            <div class='loginButton'>
+              <button id='button' type="submit" onSubmit={(e) => handleSubmit(e)}>Zaloguj się</button>
+            </div>
           </form>
         </div>
       </main>
