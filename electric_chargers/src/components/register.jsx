@@ -35,10 +35,12 @@ function Register() {
 
     if(cleanPassword === cleanRepeatPassword){
       try{
-        /*const res = await axios.post(null, {
+        const res = await axios.post('/api/auth/register', {
           username: cleanUsername,
+          email: cleanEmail,
           password: cleanPassword
-        });*/
+        });
+        console.log(res.data);
       }catch(e){
         console.error(e);
       }
@@ -55,23 +57,23 @@ function Register() {
       <main>
         <div className="login-container">
           <form method="post">
-            <div class='input'>
+            <div className='input'>
               <label htmlFor="uname"><b>Nazwa użytkownika</b></label>
               <input id='nameVal' type="text" placeholder="Wprowadź nazwę użytkownika" name="uname" required onChange={(e) => handleUsernameChange(e)} />
             </div>
-            <div class='input'>
+            <div className='input'>
               <label htmlFor="email"><b>Email</b></label>
               <input id='emailVal' type="text" placeholder="Wprowadź Email" name="email" required onChange={(e) => handleEmailChange(e)} />
             </div>
-            <div class='input'>
+            <div className='input'>
               <label htmlFor="psw"><b>Hasło</b></label>
               <input id='passwordVal' type="password" placeholder="Wprowadź hasło" name="psw" required onChange={(e) => handlePasswordChange(e)} />
             </div>
-            <div class='input'>
+            <div className='input'>
               <label htmlFor="psw-repeat"><b>Powtórz hasło</b></label>
               <input id='passwordAgainVal' type="password" placeholder="Powtórz hasło" name="psw-repeat" required onChange={(e) => handleRepeatPasswordChange(e)} />
             </div>
-            <div class='input'>
+            <div className='input'>
             <button id='button' type="submit" onSubmit={(e) => handleSubmit(e)}>Zarejestruj się</button>
             </div>
           </form>
