@@ -24,7 +24,7 @@ function Login() {
     let cleanPassword = validator.escape(password);
 
     try{
-     const res = await axiosInstance.post('api/users/auth/login', {
+      const res = await axiosInstance.post('/api/users/auth/login', {
         email: cleanUsername,
         password: cleanPassword
       });
@@ -36,25 +36,25 @@ function Login() {
   }
 
   return (
-    <>
-      <main>
-        <div className="login-container">
-          <form method="post">
-            <div className='loginInput'>
-              <label htmlFor="uname"><b>Nazwa użytkownika</b></label>
-              <input id='logVal' type="text" placeholder="Wprowadź nazwę użytkownika" name="uname" required onChange={(e) => handleUsernameChange(e)} />
-            </div>
-            <div className='loginInput'>
-              <label htmlFor="psw"><b>Hasło</b></label>
-              <input id='passVal' type="password" placeholder="Wprowadź hasło" name="psw" required onChange={(e) => handlePasswordChange(e)} />
-            </div>
-            <div className='loginButton'>
-              <button id='button' type="submit" onSubmit={(e) => handleSubmit(e)}>Zaloguj się</button>
-            </div>
-          </form>
-        </div>
-      </main>
-    </>
+      <>
+        <main>
+          <div className="login-container">
+            <form method="post" onSubmit={(e) => handleSubmit(e)}>
+              <div className='loginInput'>
+                <label htmlFor="uname"><b>Nazwa użytkownika</b></label>
+                <input id='logVal' type="text" placeholder="Wprowadź nazwę użytkownika" name="uname" required onChange={(e) => handleUsernameChange(e)} />
+              </div>
+              <div className='loginInput'>
+                <label htmlFor="psw"><b>Hasło</b></label>
+                <input id='passVal' type="password" placeholder="Wprowadź hasło" name="psw" required onChange={(e) => handlePasswordChange(e)} />
+              </div>
+              <div className='loginButton'>
+                <button id='button' type="submit">Zaloguj się</button>
+              </div>
+            </form>
+          </div>
+        </main>
+      </>
   );
 }
 
