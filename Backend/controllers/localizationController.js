@@ -144,4 +144,6 @@ localizationsRouter.delete('/delete/:id', isLoggedUser, isAdmin, async (req, res
     }
 });
 
+//Add advanced logic, eventually cast it to frontend (like picking cities, calculating distances etc)
+
 export default localizationsRouter;
