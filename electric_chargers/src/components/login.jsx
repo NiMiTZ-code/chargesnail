@@ -3,11 +3,13 @@ import '../styles/style.css';
 import '../styles/login.css';
 import validator from "validator";
 import axiosInstance from "../axiosInstance.js";
+import {useNavigate} from "react-router-dom";
 
 function Login() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
@@ -29,6 +31,7 @@ function Login() {
         password: cleanPassword
       });
 
+      navigate('/');
       console.log(res.data);
     }catch(e){
       console.error(e);
