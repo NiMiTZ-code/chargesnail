@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import '../styles/style.css';
 import '../styles/login.css';
 import validator from "validator";
-import axiosInstance from "../axiosInstance.js";
 import {useNavigate} from "react-router-dom";
+import axios from 'axios';
 
 function Login() {
 
@@ -26,7 +25,7 @@ function Login() {
     let cleanPassword = validator.escape(password);
 
     try{
-      const res = await axiosInstance.post('/api/users/auth/login', {
+      const res = await axios.post('/api/users/auth/login', {
         email: cleanUsername,
         password: cleanPassword
       });

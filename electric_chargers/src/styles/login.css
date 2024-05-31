@@ -1,21 +1,31 @@
-.loginInput{
-    text-align: center;
+
+.loginInput {
+    text-align: center; 
+    margin-bottom: 10px;
+    display: grid; 
+}
+
+.loginButton {
+    text-align: center; 
+}
+.login-container *{
     margin-bottom: 10px;
 }
-.loginButton{
-    text-align: center;
+
+#logVal {
+    margin-left: 10px; 
+    border-radius: 3px; 
 }
-#logVal{
-    margin-left: 10px;
-    border-radius: 3px;
+
+#logVal:hover {
+    background-color: lightgrey; 
 }
-#logVal:hover{
-    background-color: lightgrey;
+
+#passVal {
+    margin-left: 10px; 
+    border-radius: 3px; 
 }
-#passVal{
-    margin-left: 110px;
-    border-radius: 3px;
-}
-#passVal:hover{
-    background-color: lightgrey;
+
+#passVal:hover {
+    background-color: lightgrey; 
 }

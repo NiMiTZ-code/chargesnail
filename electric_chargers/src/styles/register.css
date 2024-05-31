@@ -1,32 +1,74 @@
-.input{
-    margin-bottom: 10px;
-    text-align: center;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
-#nameVal{
+
+.login-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    height: 450px;
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.input {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input input {
+    width: calc(100% - 20px);
+    padding: 8px;
     margin-left: 10px;
     border-radius: 3px;
+    border: 1px solid #ccc;
+    transition: background-color 0.3s ease;
 }
-#nameVal:hover{
+
+.input input:hover {
     background-color: lightgrey;
 }
-#emailVal{
-    margin-left: 108px;
-    border-radius: 3px;
+
+.input input:focus {
+    border-color: #007BFF;
+    outline: none;
 }
-#emailVal:hover{
-    background-color: lightgrey;
+
+.submit-button {
+    text-align: center; 
+    margin-top: 15px; 
 }
-#passwordVal{
-    margin-left: 110px;
-    border-radius: 3px;
+
+.submit-button button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px; 
+    background-color: #007BFF;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
-#passwordVal:hover{
-    background-color: lightgrey;
+
+.submit-button button:hover {
+    background-color: #0056b3;
 }
-#passwordAgainVal{
-    margin-left: 53px;
-    border-radius: 3px;
-}
-#passwordAgainVal:hover{
-    background-color: lightgrey;
+
+.inputbutton{
+    text-align: center;
 }
