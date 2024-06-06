@@ -30,7 +30,10 @@ function Login() {
         password: cleanPassword
       });
 
-      navigate('/');
+      navigate('/', {
+        state:{isAdmin:(cleanUsername==="m@nowak.com")}
+      });
+
       console.log(res.data);
     }catch(e){
       console.error(e);

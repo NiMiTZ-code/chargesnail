@@ -1,11 +1,8 @@
-import React from 'react';
-//import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, {useEffect} from 'react';
+import {useNavigate, BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import Home from './home.jsx';
 import Login from './login.jsx';
 import Register from './register.jsx';
-
-
 
 function App() {
   return (
