@@ -21,7 +21,7 @@ const updateLocalization = async (id, localization) => {
     return db.update(localizations).set(localization).where(eq(localizations.id, id));
 };
 const deleteLocalization = async (id) => {
-    return db.delete().from(localizations).where(eq(localizations.id, id));
+    return db.delete(localizations).where(eq(localizations.id, id));
 };
 localizationsRouter.post('/add', isLoggedUser, isAdmin, async (req, res) => {
     try {
