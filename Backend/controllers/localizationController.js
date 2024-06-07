@@ -31,8 +31,8 @@ localizationsRouter.post('/add', isLoggedUser, isAdmin, async (req, res) => {
             street: Joi.string().required(),
             city: Joi.string().required(),
             postal_code: Joi.string().required(),
-            gps_lat: Joi.string().required().regex(/^((\-?|\+?)?\d+(\.\d+)?),\s*((\-?|\+?)?\d+(\.\d+)?)$/),
-            gps_long: Joi.string().required().regex(/^((\-?|\+?)?\d+(\.\d+)?),\s*((\-?|\+?)?\d+(\.\d+)?)$/),
+            gps_lat: Joi.string().required().regex(/^((\-?|\+?)?\d+(\.\d+)?)$/),
+            gps_long: Joi.string().required().regex(/\s*((\-?|\+?)?\d+(\.\d+)?)$/),
             isActive: Joi.boolean().required(),
             description: Joi.string(),
             res_start_date: Joi.date(),
@@ -42,10 +42,11 @@ localizationsRouter.post('/add', isLoggedUser, isAdmin, async (req, res) => {
         if (error) {
             return res.status(400).json(error.details[0].message);
         }
-        else { //should if the localization already exists TODO
+        else { //should check if the localization already exists TODO
             const localization = { display_name, street, city, postal_code, gps_lat, gps_long, isActive, description, res_start_date, res_end_date };
             insertLocalization(localization).then((result) => {
-                res.status(201).json(result);
+                console.log(result);
+                res.status(201).json("Localization created successfully");
             });
         }
     }
@@ -56,9 +57,9 @@ localizationsRouter.post('/add', isLoggedUser, isAdmin, async (req, res) => {
 });
 localizationsRouter.get('/:id', async (req, res) => {
     try {
-        const id = req.params.id; //needs JOI validation
+        const id = req.params.id;
         getLocalizationById(id).then((result) => {
-            res.json(result);
+            res.status(200).json(result);
         });
     }
     catch (err) {
@@ -66,7 +67,6 @@ localizationsRouter.get('/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 localizationsRouter.get('/', async (req, res) => {
     try {
         getAllLocalizations().then((result) => {
@@ -75,38 +75,33 @@ localizationsRouter.get('/', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error: ' + err });
     }
 });
-
-localizationsRouter.get('/:city', async (req, res) => {
+localizationsRouter.delete('/delete/:id', isLoggedUser, isAdmin, async (req, res) => {
     try {
-        const city = req.params.city; //neds JOI validation
-        getAllLocalizationByCity(city).then((result) => {
-            res.status(200).json(result);
+        const id = req.params.id;
+        deleteLocalization(id).then((result) => {
+            res.status(200).json({ message: 'Localization deleted' });
         });
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error: ' + err });
     }
 });
-
-localizationsRouter.put('/update/:id', isLoggedUser, isAdmin, async (req, res) => {
-    const localization = getLocalizationById(req.params.id);
-    if (localization.length === 0) {
-        return res.status(404).json({ error: 'Localization not found' });
-    }
+localizationsRouter.patch('/update/:id', isLoggedUser, isAdmin, async (req, res) => {
     try {
+        const id = req.params.id;
         let { display_name, street, city, postal_code, gps_lat, gps_long, isActive, description, res_start_date, res_end_date } = req.body;
         const schema = Joi.object({
-            display_name: Joi.string().required().min(5).max(30),
-            street: Joi.string().required(),
-            city: Joi.string().required(),
-            postal_code: Joi.string().required(),
-            gps_lat: Joi.string().required().regex(/^((\-?|\+?)?\d+(\.\d+)?),\s*((\-?|\+?)?\d+(\.\d+)?)$/),
-            gps_long: Joi.string().required().regex(/^((\-?|\+?)?\d+(\.\d+)?),\s*((\-?|\+?)?\d+(\.\d+)?)$/),
-            isActive: Joi.boolean().required(),
+            display_name: Joi.string().min(5).max(30),
+            street: Joi.string(),
+            city: Joi.string(),
+            postal_code: Joi.string(),
+            gps_lat: Joi.string().regex(/^((\-?|\+?)?\d+(\.\d+)?)$/),
+            gps_long: Joi.string().regex(/\s*((\-?|\+?)?\d+(\.\d+)?)$/),
+            isActive: Joi.boolean(),
             description: Joi.string(),
             res_start_date: Joi.date(),
             res_end_date: Joi.date()
@@ -116,34 +111,17 @@ localizationsRouter.put('/update/:id', isLoggedUser, isAdmin, async (req, res) =
             return res.status(400).json(error.details[0].message);
         }
         else {
+            if (!id)
+                return res.status(400).json('Id is required');
             const localization = { display_name, street, city, postal_code, gps_lat, gps_long, isActive, description, res_start_date, res_end_date };
-            updateLocalization(req.params.id, localization).then((result) => {
-                res.status(201).json(result);
+            updateLocalization(id, localization).then((result) => {
+                res.status(200).json({ message: 'Localization updated' });
             });
         }
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error: ' + err });
     }
 });
-
-localizationsRouter.delete('/delete/:id', isLoggedUser, isAdmin, async (req, res) => {
-    const localization = getLocalizationById(req.params.id);
-    if (localization.length === 0) {
-        return res.status(404).json({ error: 'Localization not found' });
-    }
-    try {
-        deleteLocalization(req.params.id).then((result) => {
-            res.status(200).json(result);
-        });
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-//Add advanced logic, eventually cast it to frontend (like picking cities, calculating distances etc)
-
 export default localizationsRouter;
