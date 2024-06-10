@@ -3,6 +3,7 @@ import {useNavigate, BrowserRouter as Router, Routes, Route} from 'react-router-
 import Home from './home.jsx';
 import Login from './login.jsx';
 import Register from './register.jsx';
+import Conservator from './conservator';//
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="/" element={<Home />} />
+        <Route path="conservator" element={<Conservator />} />//
       </Routes>
     </Router>
   );
