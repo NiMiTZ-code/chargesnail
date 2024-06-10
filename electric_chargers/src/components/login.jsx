@@ -31,7 +31,7 @@ function Login() {
       });
 
       navigate('/', {
-        state:{isAdmin:(cleanUsername==="m@nowak.com")}
+        state:{user:res.data,isAdmin:(cleanUsername==="m@brak.com")}
       });
 
       console.log(res.data);
