@@ -30,27 +30,36 @@ function Home() {
 
   const [chargers, setChargers] = useState([]);
 
-  const removeCharger = (index) => {
-    setChargers(prevChargers => prevChargers.filter((_, i) => i !== index));
+  const removeCharger = async (id) => {
+    try{
+      await axios.delete(`/api/localizations/delete/${id}`, {
+        headers: {
+          "Authorization": `Bearer ${user.token}`
+        }});
+      setChargers(prevChargers => prevChargers.filter((charger) => charger.id !== id));
+    }catch(e){
+      console.error(e);
+    }
   }
 
-  const updateCharger = (index, field, value) => {
+  const updateCharger = async (id, field, value) => {
     setChargers(prevChargers => {
-        const updatedChargers = [...prevChargers];
-        updatedChargers[index] = { ...updatedChargers[index], [field]: value };
-        return updatedChargers;
+      return prevChargers.map(charger => 
+        charger.id === id ? { ...charger, [field]: value } : charger
+      );
     });
-};
+  }
+
 
 const addCharger = () => {
-  setChargers([...chargers, new Charger()]);
+  setChargers([...chargers, new Charger({ id: null })]);
 }
 
 const loadChargers = async () => {
   if(!isAdmin)
     return 
   try{
-    const response = await axios.get("/api/localizations", null, {
+    const response = await axios.get("/api/localizations", {
       headers: {
         "Authorization": `Bearer ${user.token}`
       }
@@ -66,20 +75,26 @@ useEffect(() => {
 }, [isAdmin])
 
 const saveChargers = async () => {
-  // Na razie usuwamy date z ladowarki - pozniej sie to usunie
-  const entries = Object.entries(chargers[0]);
-  const newEntries = entries.slice(0, -2);
-  const newCharger = Object.fromEntries(newEntries);
-  try{
-    const response = await axios.post("/api/localizations/add", newCharger, {
+  for(const charger of chargers){
+    charger.gps_lat = charger.gps_lat.toString();
+    charger.gps_long = charger.gps_long.toString();
+    const {res_start_date, res_end_date, id, ...chargerWithoutDates} = charger;
+    const config = {
       headers: {
-        'Authorization': `Bearer ${user.token}`
+        "Authorization": `Bearer ${user.token}`
       }
-    });
+    }
 
-    console.log(response);
-  }catch(e){
-    console.error(e);
+    try{
+      if(id.id === null){
+        await axios.post(`/api/localizations/add`, chargerWithoutDates, config);
+      }else{
+        await axios.patch(`/api/localizations/update/${id}`, chargerWithoutDates,config);
+      }
+    }catch(e){
+      console.error(e);
+    }
+
   }
 }
   
