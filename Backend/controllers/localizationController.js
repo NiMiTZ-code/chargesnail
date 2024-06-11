@@ -25,7 +25,9 @@ const deleteLocalization = async (id) => {
 };
 localizationsRouter.post('/add', isLoggedUser, isAdmin, async (req, res) => {
     try {
-        let { display_name, street, city, postal_code, gps_lat, gps_long, isActive, description, res_start_date, res_end_date } = req.body;
+        let { display_name, street, city, postal_code, gps_lat, gps_long, isActive, description, res_start, res_end } = req.body;
+        let res_start_date = res_start ? new Date(res_start) : new Date(0);
+        let res_end_date = res_end ? new Date(res_end) : new Date(res_start_date.getTime() + (60 * 60 * 1000));
         const schema = Joi.object({
             display_name: Joi.string().required().min(5).max(30),
             street: Joi.string().required(),
@@ -93,7 +95,9 @@ localizationsRouter.delete('/delete/:id', isLoggedUser, isAdmin, async (req, res
 localizationsRouter.patch('/update/:id', isLoggedUser, isAdmin, async (req, res) => {
     try {
         const id = req.params.id;
-        let { display_name, street, city, postal_code, gps_lat, gps_long, isActive, description, res_start_date, res_end_date } = req.body;
+        let { display_name, street, city, postal_code, gps_lat, gps_long, isActive, description, res_start, res_end } = req.body;
+        let res_start_date = res_start ? new Date(res_start) : new Date(0); //zamienić wartość pustą na wartość pobieraną z bazy!!!
+        let res_end_date = res_end ? new Date(res_end) : new Date(res_start_date.getTime() + (60 * 60 * 1000));
         const schema = Joi.object({
             display_name: Joi.string().min(5).max(30),
             street: Joi.string(),
