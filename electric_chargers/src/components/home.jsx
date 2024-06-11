@@ -28,10 +28,7 @@ function Home() {
     }
   }, [state]);
 
-  const [chargers, setChargers] = useState([
-    new Charger("Ładowarka 1", "Ulicka", "Bedzin", "42-500", "45.123456", "45.123456", true, "Fajna ladowarka", new Date(), new Date(new Date() + 1)),
-    new Charger("Ładowarka 2", "Ulicka", "Bedzin", "42-500", "45.123456", "45.123456", true, "Fajna ladowarka", new Date(), new Date(new Date() + 1))
-  ]);
+  const [chargers, setChargers] = useState([]);
 
   const removeCharger = (index) => {
     setChargers(prevChargers => prevChargers.filter((_, i) => i !== index));
@@ -49,9 +46,32 @@ const addCharger = () => {
   setChargers([...chargers, new Charger()]);
 }
 
-const saveChargers = async () => {
+const loadChargers = async () => {
+  if(!isAdmin)
+    return 
   try{
-    const response = await axios.post("/api/localizations/add", chargers[0], {
+    const response = await axios.get("/api/localizations", null, {
+      headers: {
+        "Authorization": `Bearer ${user.token}`
+      }
+    })
+    setChargers(response.data);
+  }catch(e){
+    console.error(e);
+  }
+}
+
+useEffect(() => {
+  loadChargers();
+}, [isAdmin])
+
+const saveChargers = async () => {
+  // Na razie usuwamy date z ladowarki - pozniej sie to usunie
+  const entries = Object.entries(chargers[0]);
+  const newEntries = entries.slice(0, -2);
+  const newCharger = Object.fromEntries(newEntries);
+  try{
+    const response = await axios.post("/api/localizations/add", newCharger, {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
