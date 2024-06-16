@@ -41,7 +41,8 @@ const insertReservation = async (reservation) => {
                 throw new Error(updateError.message);
             }
         });
-    } catch (error) {
+    }
+    catch (error) {
         throw new Error(error.message);
     }
 };
