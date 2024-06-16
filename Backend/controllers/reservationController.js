@@ -95,4 +95,15 @@ reservationsRouter.get('/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+reservationsRouter.get('/past-reservations', isLoggedUser, async (req, res) => {
+    try {
+        const id = req.user.id;
+        const reservationsList = await db.select().from(reservations).where(eq(reservations.user_id, id));
+        res.status(200).json(reservationsList);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 export default reservationsRouter;
