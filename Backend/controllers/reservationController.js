@@ -84,9 +84,16 @@ reservationsRouter.post('/add', isLoggedUser, async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-reservationsRouter.get('/:id', async (req, res) => {
+reservationsRouter.get('/reservation', async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = req.body.id;
+        const schema = Joi.object({
+            id: Joi.number().required()
+        });
+        const { error } = schema.validate({ id });
+        if (error) {
+            res.status(400).json(error.details[0].message);
+        }
         const reservation = await db.select().from(reservations).where(eq(reservations.id, id));
         res.status(200).json(reservation);
     }
