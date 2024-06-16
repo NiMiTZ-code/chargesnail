@@ -2,6 +2,7 @@ import express, { json, urlencoded } from 'express';
 import session from 'express-session';
 import userRouter from "./controllers/userController.js";
 import localizationsRouter from "./controllers/localizationController.js";
+import reservationsRouter from "./controllers/reservationController.js";
 import cors from 'cors';
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(session({
 
 app.use('/api/users', userRouter);
 app.use('/api/localizations', localizationsRouter);
+app.use('/api/reserve', reservationsRouter);
 
 
 app.listen(port, () => {
