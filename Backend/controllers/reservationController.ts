@@ -4,7 +4,7 @@ import db from '../config/db.config.js';
 import { reservations } from '../models/reservation.js';
 import { localizations } from '../models/localization.js';
 import { isAdmin, isLoggedUser, isOwner } from '../middleware/authMiddleware.js';
-import { eq, between, and, or, is } from 'drizzle-orm';
+import { eq, between, and, or, is, sql } from 'drizzle-orm';
 const reservationsRouter = Router();
 const calculatePrice = async (start_date, end_date) => {
     const PRICE_PER_HOUR = 10;
@@ -13,9 +13,9 @@ const calculatePrice = async (start_date, end_date) => {
     var price = reservationHours * PRICE_PER_HOUR;
     return price;
 };
-const checkIfReservationTimeConflict = async (localization_id, start_date, end_date) => {
+const checkIfReservationTimeConflict = async (localization_id, start_date, end_date, tx) => {
     let isConflict = true;
-    var reservationList = await db.select().from(reservations).where(and(eq(reservations.localization_id, localization_id), (or(between(reservations.start_date, start_date, end_date), between(reservations.end_date, start_date, end_date)))));
+    var reservationList = await tx.select().from(reservations).where(and(eq(reservations.localization_id, localization_id), (or(between(reservations.start_date, start_date, end_date), between(reservations.end_date, start_date, end_date)))));
     if (reservationList.length == 0) {
         isConflict = false;
     }
@@ -31,8 +31,9 @@ const insertReservation = async (reservation) => {
             }
         });
     } catch (error) {
-        return (error.message);
+        return { success: false, message: error.message };
     }
+    return { success: true};
 };
 const updateReservation = async (id, loc_id, reservation) => {
     let customErrorMsg;
@@ -43,7 +44,7 @@ const updateReservation = async (id, loc_id, reservation) => {
                 if (nullResTimeError) {
                     throw new Error(nullResTimeError.message + " Could not zero previous reservation time");
                 }
-                const isConflict = await checkIfReservationTimeConflict(loc_id, reservation.start_date, reservation.end_date);
+                const isConflict = await checkIfReservationTimeConflict(loc_id, reservation.start_date, reservation.end_date, tx);
                 if (isConflict) {
                     throw new Error("Reservation time conflict");
                 }
@@ -80,7 +81,7 @@ reservationsRouter.post('/add', isLoggedUser, async (req, res) => {
         else {
             start_date = new Date(start_date);
             end_date = new Date(end_date);
-            const isConflict = await checkIfReservationTimeConflict(localization_id, start_date, end_date);
+            const isConflict = await checkIfReservationTimeConflict(localization_id, start_date, end_date, db);
             if (isConflict) {
                 return res.status(409).json({ error: 'Reservation time conflict' });
             }
