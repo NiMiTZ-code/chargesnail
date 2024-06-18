@@ -2,8 +2,7 @@ import { Router } from 'express';
 import Joi from 'joi';
 import db from '../config/db.config.js';
 import { reservations } from '../models/reservation.js';
-import { localizations } from '../models/localization.js';
-import { isLoggedUser } from '../middleware/authMiddleware.js';
+import { isLoggedUser, isOwner } from '../middleware/authMiddleware.js';
 import { eq, between, and, or } from 'drizzle-orm';
 const reservationsRouter = Router();
 const calculatePrice = async (start_date, end_date) => {
@@ -22,12 +21,6 @@ const checkIfReservationTimeConflict = async (localization_id, start_date, end_d
     return isConflict;
 };
 const insertReservation = async (reservation) => {
-    const [res_time] = await db.select({
-        start: localizations.res_start_date,
-        end: localizations.res_end_date
-    }).from(localizations).where(eq(localizations.id, reservation.localization_id));
-    var start = res_time.start < reservation.start_date ? res_time.start : reservation.start_date;
-    var end = res_time.end > reservation.end_date ? res_time.end : reservation.end_date;
     try {
         await db.transaction(async (tx) => {
             const { error: insertError } = await tx.insert(reservations).values(reservation);
@@ -35,16 +28,42 @@ const insertReservation = async (reservation) => {
                 tx.rollback();
                 throw new Error(insertError.message);
             }
-            const { error: updateError } = await tx.update(localizations).set({ res_start_date: start, res_end_date: end }).where(eq(localizations.id, reservation.localization_id));
-            if (updateError) {
+        });
+    }
+    catch (error) {
+        return (error.message);
+    }
+};
+const updateReservation = async (id, loc_id, reservation) => {
+    let customErrorMsg;
+    try {
+        await db.transaction(async (tx) => {
+            try {
+                const { error: nullResTimeError } = await tx.update(reservations).set({ start_date: new Date(0), end_date: new Date(0) }).where(eq(reservations.id, id));
+                if (nullResTimeError) {
+                    throw new Error(nullResTimeError.message + " Could not zero previous reservation time");
+                }
+                const isConflict = await checkIfReservationTimeConflict(loc_id, reservation.start_date, reservation.end_date);
+                if (isConflict) {
+                    throw new Error("Reservation time conflict");
+                }
+                const { error: updateError } = await tx.update(reservations).set(reservation).where(eq(reservations.id, id));
+                if (updateError) {
+                    throw new Error(updateError.message + " Could not update reservation");
+                }
+            }
+            catch (error) {
+                console.log(error);
+                customErrorMsg = error.message;
                 tx.rollback();
-                throw new Error(updateError.message);
+                throw error;
             }
         });
     }
     catch (error) {
-        throw new Error(error.message);
+        return { success: false, message: error.message + ": " + customErrorMsg };
     }
+    return { success: true };
 };
 reservationsRouter.post('/add', isLoggedUser, async (req, res) => {
     try {
@@ -107,6 +126,47 @@ reservationsRouter.get('/past-reservations', isLoggedUser, async (req, res) => {
         const id = req.user.id;
         const reservationsList = await db.select().from(reservations).where(eq(reservations.user_id, id));
         res.status(200).json(reservationsList);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+reservationsRouter.patch('/update', isLoggedUser, isOwner, async (req, res, next) => {
+    //eventually add a check for admin
+    try {
+        let { id, start_date, end_date } = req.body;
+        const schema = Joi.object({
+            id: Joi.number().required(),
+            start_date: Joi.date(),
+            end_date: Joi.date()
+        });
+        const { error } = schema.validate({ id, start_date, end_date });
+        if (error) {
+            return res.status(400).json(error.details[0].message);
+        }
+        else {
+            start_date = new Date(start_date);
+            end_date = new Date(end_date);
+            let localization_id;
+            try {
+                localization_id = await db.select({ localization_id: reservations.localization_id }).from(reservations).where(eq(reservations.id, id));
+            }
+            catch (error) {
+                return res.status(500).json({ error: 'Could not fetch localization' });
+            }
+            const price = await calculatePrice(start_date, end_date);
+            const reservation = { start_date, end_date, price };
+            updateReservation(id, localization_id[0].localization_id, reservation).then((result) => {
+                console.log(result);
+                if (result.success == false) {
+                    res.status(409).json("Could not update reservation - " + result.message);
+                }
+                else {
+                    res.status(200).json("Reservation updated successfully");
+                }
+            });
+        }
     }
     catch (err) {
         console.log(err);

@@ -13,7 +13,7 @@ const calculatePrice = async (start_date, end_date) => {
     var price = reservationHours * PRICE_PER_HOUR;
     return price;
 };
-const checkIfReservationTimeConflict = async (localization_id,  start_date, end_date) => {
+const checkIfReservationTimeConflict = async (localization_id, start_date, end_date) => {
     let isConflict = true;
     var reservationList = await db.select().from(reservations).where(and(eq(reservations.localization_id, localization_id), (or(between(reservations.start_date, start_date, end_date), between(reservations.end_date, start_date, end_date)))));
     if (reservationList.length == 0) {
@@ -21,35 +21,7 @@ const checkIfReservationTimeConflict = async (localization_id,  start_date, end_
     }
     return isConflict;
 };
-const timeManipulationOnUpdate = async (loc_id, reservation_id, start_date, end_date) => {
-    const [loc_time] = await db.select({
-        start: localizations.res_start_date,
-        end: localizations.res_end_date
-    }).from(localizations).where(eq(localizations.id, loc_id));
-    const [res_time] = await db.select({
-        start: reservations.start_date,
-        end: reservations.end_date
-    }).from(reservations).where(eq(reservations.id, reservation_id));
-    var start:Date, end:Date;
-    if (loc_time.start == res_time.start && loc_time.end == res_time.end) {
-     start = start_date;
-     end = end_date;
-    }else{
-        start = new Date();
-        end = new Date();
-        //TODO: implement time manipulation
-    }
-    
-
-    return { start, end };
-};
 const insertReservation = async (reservation) => {
-    const [res_time] = await db.select({
-        start: localizations.res_start_date,
-        end: localizations.res_end_date
-    }).from(localizations).where(eq(localizations.id, reservation.localization_id));
-    var start = res_time.start < reservation.start_date ? res_time.start : reservation.start_date; //NEEDS FIX, leads to time holes
-    var end = res_time.end > reservation.end_date ? res_time.end : reservation.end_date;
     try {
         await db.transaction(async (tx) => {
             const { error: insertError } = await tx.insert(reservations).values(reservation);
@@ -57,18 +29,41 @@ const insertReservation = async (reservation) => {
                 tx.rollback();
                 throw new Error(insertError.message);
             }
-            const { error: updateError } = await tx.update(localizations).set({ res_start_date: start, res_end_date: end }).where(eq(localizations.id, reservation.localization_id));
-            if (updateError) {
-                tx.rollback();
-                throw new Error(updateError.message);
-            }
         });
     } catch (error) {
-        throw new Error(error.message);
+        return (error.message);
     }
 };
 const updateReservation = async (id, loc_id, reservation) => {
-    return db.update(reservations).set(reservation).where(eq(reservations.id, id));
+    let customErrorMsg;
+    try {
+        await db.transaction(async (tx) => {
+            try {
+                const { error: nullResTimeError } = await tx.update(reservations).set({ start_date: new Date(0), end_date: new Date(0) }).where(eq(reservations.id, id));
+                if (nullResTimeError) {
+                    throw new Error(nullResTimeError.message + " Could not zero previous reservation time");
+                }
+                const isConflict = await checkIfReservationTimeConflict(loc_id, reservation.start_date, reservation.end_date);
+                if (isConflict) {
+                    throw new Error("Reservation time conflict");
+                }
+                const { error: updateError } = await tx.update(reservations).set(reservation).where(eq(reservations.id, id));
+                if (updateError) {
+                    throw new Error(updateError.message + " Could not update reservation");
+                }
+            }
+            catch (error) {
+                console.log(error);
+                customErrorMsg = error.message;
+                tx.rollback();
+                throw error;
+            }
+        });
+    }
+    catch (error) {
+        return { success: false, message: error.message + ": " + customErrorMsg };
+    }
+    return { success: true };
 };
 reservationsRouter.post('/add', isLoggedUser, async (req, res) => {
     try {
@@ -153,21 +148,23 @@ reservationsRouter.patch('/update', isLoggedUser, isOwner, async (req, res, next
         else {
             start_date = new Date(start_date);
             end_date = new Date(end_date);
-            let localization_id:number;
+            let localization_id;
             try {
                 localization_id = await db.select({ localization_id: reservations.localization_id }).from(reservations).where(eq(reservations.id, id));
-            } catch (error) {
-                return res.status(500).json({ error: 'Could not fetch localization' });
             }
-            const isConflict = await checkIfReservationTimeConflict(localization_id, start_date, end_date);
-            if (isConflict) {
-                return res.status(409).json({ error: 'Reservation time conflict' });
+            catch (error) {
+                return res.status(500).json({ error: 'Could not fetch localization' });
             }
             const price = await calculatePrice(start_date, end_date);
             const reservation = { start_date, end_date, price };
-            updateReservation(id, localization_id, reservation).then((result) => {
+            updateReservation(id, localization_id[0].localization_id, reservation).then((result) => {
                 console.log(result);
-                res.status(200).json("Reservation updated successfully");
+                if (result.success == false) {
+                    res.status(409).json("Could not update reservation - " + result.message );
+                }
+                else {
+                    res.status(200).json("Reservation updated successfully");
+                }
             });
         }
     }
