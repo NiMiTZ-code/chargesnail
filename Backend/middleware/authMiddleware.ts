@@ -40,7 +40,7 @@ const isOwner = async (req, res, next) => {
         const user_uuid = req.user.id;
         const reservation_id = req.body.id;
         const ownerId = await db.select({user_uuid: reservations.user_id}).from(reservations).where(eq(reservations.id, reservation_id));
-        if(ownerId !== user_uuid){
+        if(ownerId[0].user_uuid !== user_uuid){
             return res.status(401).json({error: 'Unauthorized. User does not own this reservation'});
         }
         return next();
