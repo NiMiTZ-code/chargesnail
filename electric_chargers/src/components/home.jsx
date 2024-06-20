@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import '../styles/style.css';
 import Admin from './Admin';
-import Conservator from './conservator';
 import { useLocation } from 'react-router-dom';
 import {Charger} from "../models/Charger";
 import MainPage from './mainPage';
