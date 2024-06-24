@@ -76,6 +76,9 @@ const updateReservation = async (id, loc_id, reservation) => {
     }
     return { success: true };
 };
+const deleteReservation = async (res_id) => {
+    return db.delete(reservations).where(eq(reservations.id, res_id));
+};
 reservationsRouter.post('/add', isLoggedUser, async (req, res) => {
     try {
         let { localization_id, start_date, end_date } = req.body;
@@ -184,6 +187,28 @@ reservationsRouter.patch('/update', isLoggedUser, isOwner, async (req, res, next
                 else {
                     res.status(200).json("Reservation updated successfully");
                 }
+            });
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+reservationsRouter.delete('/delete', isLoggedUser, isOwner, async (req, res) => {
+    try {
+        let { id } = req.body;
+        const schema = Joi.object({
+            id: Joi.number().required()
+        });
+        const { error } = schema.validate({ id });
+        if (error) {
+            return res.status(400).json(error.details[0].message);
+        }
+        else {
+            deleteReservation(id).then((result) => {
+                console.log(result);
+                res.status(200).json("Reservation deleted successfully");
             });
         }
     }
