@@ -12,6 +12,16 @@ const calculatePrice = async (start_date, end_date) => {
     var price = reservationHours * PRICE_PER_HOUR;
     return price;
 };
+const validateDate = async (start_date, end_date) => {
+    let isValid = true;
+    if (start_date == null || start_date < Date.now()) {
+        isValid = false;
+    }
+    if (start_date > end_date) {
+        isValid = false;
+    }
+    return isValid;
+};
 const checkIfReservationTimeConflict = async (localization_id, start_date, end_date, tx) => {
     let isConflict = true;
     var reservationList = await tx.select().from(reservations).where(and(eq(reservations.localization_id, localization_id), (or(between(reservations.start_date, start_date, end_date), between(reservations.end_date, start_date, end_date)))));
@@ -81,6 +91,10 @@ reservationsRouter.post('/add', isLoggedUser, async (req, res) => {
         else {
             start_date = new Date(start_date);
             end_date = new Date(end_date);
+            const isValid = await validateDate(start_date, end_date);
+            if (!isValid) {
+                return res.status(400).json({ error: 'Invalid date' });
+            }
             const isConflict = await checkIfReservationTimeConflict(localization_id, start_date, end_date, db);
             if (isConflict) {
                 return res.status(409).json({ error: 'Reservation time conflict' });
@@ -149,6 +163,10 @@ reservationsRouter.patch('/update', isLoggedUser, isOwner, async (req, res, next
         else {
             start_date = new Date(start_date);
             end_date = new Date(end_date);
+            const isValid = await validateDate(start_date, end_date);
+            if (!isValid) {
+                return res.status(400).json({ error: 'Invalid date' });
+            }
             let localization_id;
             try {
                 localization_id = await db.select({ localization_id: reservations.localization_id }).from(reservations).where(eq(reservations.id, id));
