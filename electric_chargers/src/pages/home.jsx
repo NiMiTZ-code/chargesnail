@@ -1,9 +1,10 @@
-import React, {useState, useEffect} from 'react';
 import '../styles/style.css';
-import Admin from './Admin';
+import React, {useState, useEffect} from 'react';
+
+import Admin from './admin.jsx';
 import { useLocation } from 'react-router-dom';
-import {Charger} from "../models/Charger";
-import MainPage from './mainPage';
+import {Charger} from "../models/Charger.js";
+import Main from './main.jsx';
 import axios from 'axios';
 
 
@@ -101,7 +102,7 @@ const saveChargers = async () => {
   return (
     <>
       {!isAdmin && (
-        <MainPage/>
+        <Main/>
       )}
 
       {isAdmin && (

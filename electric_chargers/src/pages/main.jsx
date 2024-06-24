@@ -1,8 +1,8 @@
-import { logo, map, fb, lin, yt, ins } from '../images';
+import { logo, map, fb, lin, yt, ins } from '../images/index.js';
 import { Link } from 'react-router-dom';
 
 
-function MainPage(){
+function Main(){
     return(
         <>
         <div className="menu">
@@ -16,7 +16,7 @@ function MainPage(){
       </div>
       <main>
         <section>
-          <h1>About us</h1>
+          <h1>About us MAIN</h1>
           <p>Join us on the journey to a greener tomorrow with E-Parker – where every charge propels us towards a cleaner, more sustainable future.</p>
           <p>At E-Parker, we’re driving the future of sustainable transportation by offering state-of-the-art electric vehicle (EV) charging solutions. Our mission is to empower EV owners with convenient, reliable, and accessible charging infrastructure, making electric mobility the norm, not the exception.</p>
           <p>Founded on the principles of innovation and environmental stewardship, E-Parker provides a seamless charging experience through a network of high-performance chargers. We’re committed to accelerating the transition to clean energy vehicles by expanding our footprint of fast-charging stations across urban and rural landscapes.</p>
@@ -40,4 +40,4 @@ function MainPage(){
     )
 }
 
-export default MainPage;
+export default Main;
