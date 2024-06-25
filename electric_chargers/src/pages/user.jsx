@@ -13,6 +13,7 @@ const customIcon = new L.Icon({
 });
 
 function User({ user }) {
+    const [editReservation, setEditReservation] = useState(null);
     const [chargers, setChargers] = useState([]);
     const [selectedCharger, setSelectedCharger] = useState(null);
     const [startDate, setStartDate] = useState('');
@@ -95,6 +96,7 @@ function User({ user }) {
 
         try {
             await axios.post('/api/reserve/add', {
+                localization_id: selectedCharger,
                 charger_id: selectedCharger,
                 start_date: new Date(startDate),
                 end_date: new Date(endDate)
@@ -130,6 +132,52 @@ function User({ user }) {
     const handleEndDateChange = (e) => {
         setEndDate(e.target.value);
     };
+
+    const handleEditReservation = (reservation) => {
+        setEditReservation(reservation);
+        setSelectedCharger(reservation.localization_id);
+        setStartDate(new Date(reservation.start_date).toISOString().slice(0, 16));
+        setEndDate(new Date(reservation.end_date).toISOString().slice(0, 16));
+    };
+
+    const handleUpdateReservation = async () => {
+        if (!selectedCharger || !startDate || !endDate) {
+            alert("Proszę wypełnić wszystkie pola rezerwacji");
+            return;
+        }
+
+        try {
+            await axios.patch(`/api/reserve/update`, {
+                localization_id: selectedCharger,
+                start_date: new Date(startDate).toISOString(),
+                end_date: new Date(endDate).toISOString()
+            }, {
+                headers: {
+                    "Authorization": `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
+
+            alert("Rezerwacja została zaktualizowana");
+            setEditReservation(null);
+            setSelectedCharger(null);
+            setStartDate('');
+            setEndDate('');
+
+            const response = await axios.get("/api/reserve/past-reservations", {
+                headers: {
+                    "Authorization": `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
+            setReservations(response.data);
+            const now = new Date();
+            setFutureReservations(response.data.filter(res => new Date(res.start_date) > now));
+            setPastReservations(response.data.filter(res => new Date(res.end_date) < now));
+        } catch (e) {
+            console.error("Error updating reservation:", e);
+        }
+    };
+
+
 
     return (
         <div className="container mt-4">
@@ -208,7 +256,9 @@ function User({ user }) {
                             onChange={handleEndDateChange}
                         />
                     </div>
-                    <button className="btn btn-primary btn-block mt-3" onClick={handleReserve}>Zarezerwuj</button>
+                    <button className="btn btn-primary btn-block mt-3" onClick={editReservation ? handleUpdateReservation : handleReserve}>
+                        {editReservation ? "Zaktualizuj rezerwację" : "Zarezerwuj"}
+                    </button>
                 </div>
             </div>
 
@@ -218,19 +268,23 @@ function User({ user }) {
                     <ul className="list-group">
                         {futureReservations.map(reservation => (
                             <li key={reservation.id} className="list-group-item">
-                                Ładowarka: {reservation.charger.display_name} <br />
+                                Ładowarka: {reservation.localization_id} <br />
                                 Od: {new Date(reservation.start_date).toLocaleString()} <br />
-                                Do: {new Date(reservation.end_date).toLocaleString()}
+                                Do: {new Date(reservation.end_date).toLocaleString()} <br />
+                                <button className="btn btn-secondary mt-2" onClick={() => handleEditReservation(reservation)}>
+                                    Edytuj
+                                </button>
                             </li>
                         ))}
                     </ul>
+
                 </div>
                 <div className="col-md-6">
                     <h3>Poprzednie Rezerwacje</h3>
                     <ul className="list-group">
                         {pastReservations.map(reservation => (
                             <li key={reservation.id} className="list-group-item">
-                                Ładowarka: {reservation.charger.display_name} <br />
+                                Ładowarka: {reservation.localization_id} <br />
                                 Od: {new Date(reservation.start_date).toLocaleString()} <br />
                                 Do: {new Date(reservation.end_date).toLocaleString()}
                             </li>
