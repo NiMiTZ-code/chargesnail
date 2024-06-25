@@ -33,11 +33,13 @@ function Home() {
 
   const removeCharger = async (id) => {
     try{
-      await axios.delete(`/api/localizations/delete/${id}`, {
-        headers: {
-          "Authorization": `Bearer ${user.token}`
-        }});
-      setChargers(prevChargers => prevChargers.filter((charger) => charger.id !== id));
+        if(typeof(id)==="number"){
+          await axios.delete(`/api/localizations/delete/${id}`, {
+            headers: {
+              "Authorization": `Bearer ${user.token}`
+            }});
+        }
+        setChargers(prevChargers => prevChargers.filter((charger) => charger.id !== id));
     }catch(e){
       console.error(e);
     }
@@ -89,16 +91,19 @@ const saveChargers = async () => {
     console.log(charger);
 
     try{
-      if(id.id === null){
-        await axios.post(`/api/localizations/add`, chargerWithoutId, config);
-      }else{
-        await axios.patch(`/api/localizations/update/${id}`, chargerWithoutId,config);
+      if(typeof(id) === "number")
+          await axios.patch(`/api/localizations/update/${id}`, chargerWithoutId, config);
+      else{
+          await axios.post(`/api/localizations/add`, chargerWithoutId, config);
+          
       }
-    }catch(e){
+  }catch(e){
       console.error(e);
-    }
+  }
+  
 
   }
+  await loadChargers();
 }
   
 
