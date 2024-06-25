@@ -146,13 +146,6 @@ function User({ user }) {
     const [futureReservations, setFutureReservations] = useState([]);
     const [pastReservations, setPastReservations] = useState([]);
 
-    const exampleChargers = [
-        { id: 1, display_name: 'Ładowarka 1', street: 'ul. 3 Maja 30', city: 'Katowice', position: [50.2599, 19.0275], isActive: true },
-        { id: 2, display_name: 'Ładowarka 2', street: 'ul. Mariacka 1', city: 'Katowice', position: [50.2584, 19.0240], isActive: true },
-        { id: 3, display_name: 'Ładowarka 3', street: 'ul. Sienkiewicza 3', city: 'Katowice', position: [50.2592, 19.0184], isActive: true },
-        { id: 4, display_name: 'Ładowarka 4', street: 'ul. Stawowa 10', city: 'Katowice', position: [50.2587, 19.0280], isActive: true },
-        { id: 5, display_name: 'Ładowarka 5', street: 'ul. Dworcowa 4', city: 'Katowice', position: [50.2573, 19.0252], isActive: true }
-    ];
 
     useEffect(() => {
         const loadAvailableChargers = async () => {
@@ -162,16 +155,15 @@ function User({ user }) {
                         "Authorization": `Bearer ${user?.token}`
                     }
                 });
-                setChargers(response.data.length > 0 ? response.data : exampleChargers);
+                setChargers( response.data );
             } catch (e) {
                 console.error(e);
-                setChargers(exampleChargers);
             }
         };
 
         const loadReservations = async () => {
             try {
-                const response = await axios.get("/api/reservations", {
+                const response = await axios.get("/api/reserve/past-reservations", {
                     headers: {
                         "Authorization": `Bearer ${user?.token}`
                     }
@@ -202,7 +194,7 @@ function User({ user }) {
         const charger = chargers.find(charger => charger.id === selectedCharger);
 
         try {
-            await axios.post('/api/reservations', {
+            await axios.post('/api/reserve/add', {
                 charger_id: selectedCharger,
                 start_date: new Date(startDate).toISOString(),
                 end_date: new Date(endDate).toISOString()
@@ -217,7 +209,7 @@ function User({ user }) {
             setSelectedCharger(null);
             setStartDate('');
             setEndDate('');
-            const response = await axios.get("/api/reservations", {
+            const response = await axios.get("/api/reserve/past-reservations", {
                 headers: {
                     "Authorization": `Bearer ${user?.token}`
                 }

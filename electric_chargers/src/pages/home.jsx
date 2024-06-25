@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import {Charger} from "../models/Charger.js";
 import Main from './main.jsx';
 import axios from 'axios';
+import Uhome from "./uhome.jsx";
 
 
 function Home() {
@@ -102,7 +103,7 @@ const saveChargers = async () => {
   return (
     <>
       {!isAdmin && (
-        <Main/>
+        <Uhome/>
       )}
 
       {isAdmin && (
