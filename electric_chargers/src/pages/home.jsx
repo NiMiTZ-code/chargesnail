@@ -69,6 +69,7 @@ const loadChargers = async () => {
   }catch(e){
     console.error(e);
   }
+  console.log(chargers);
 }
 
 useEffect(() => {
@@ -79,18 +80,19 @@ const saveChargers = async () => {
   for(const charger of chargers){
     charger.gps_lat = charger.gps_lat.toString();
     charger.gps_long = charger.gps_long.toString();
-    const {res_start_date, res_end_date, id, ...chargerWithoutDates} = charger;
+    const {id,...chargerWithoutId } = charger;
     const config = {
       headers: {
         "Authorization": `Bearer ${user.token}`
       }
     }
+    console.log(charger);
 
     try{
       if(id.id === null){
-        await axios.post(`/api/localizations/add`, chargerWithoutDates, config);
+        await axios.post(`/api/localizations/add`, chargerWithoutId, config);
       }else{
-        await axios.patch(`/api/localizations/update/${id}`, chargerWithoutDates,config);
+        await axios.patch(`/api/localizations/update/${id}`, chargerWithoutId,config);
       }
     }catch(e){
       console.error(e);
