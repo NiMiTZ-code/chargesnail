@@ -33,11 +33,13 @@ function Home() {
 
   const removeCharger = async (id) => {
     try{
-      await axios.delete(`/api/localizations/delete/${id}`, {
-        headers: {
-          "Authorization": `Bearer ${user.token}`
-        }});
-      setChargers(prevChargers => prevChargers.filter((charger) => charger.id !== id));
+        if(typeof(id)==="number"){
+          await axios.delete(`/api/localizations/delete/${id}`, {
+            headers: {
+              "Authorization": `Bearer ${user.token}`
+            }});
+        }
+        setChargers(prevChargers => prevChargers.filter((charger) => charger.id !== id));
     }catch(e){
       console.error(e);
     }
@@ -69,6 +71,7 @@ const loadChargers = async () => {
   }catch(e){
     console.error(e);
   }
+  console.log(chargers);
 }
 
 useEffect(() => {
@@ -79,24 +82,28 @@ const saveChargers = async () => {
   for(const charger of chargers){
     charger.gps_lat = charger.gps_lat.toString();
     charger.gps_long = charger.gps_long.toString();
-    const {res_start_date, res_end_date, id, ...chargerWithoutDates} = charger;
+    const {id,...chargerWithoutId } = charger;
     const config = {
       headers: {
         "Authorization": `Bearer ${user.token}`
       }
     }
+    console.log(charger);
 
     try{
-      if(id.id === null){
-        await axios.post(`/api/localizations/add`, chargerWithoutDates, config);
-      }else{
-        await axios.patch(`/api/localizations/update/${id}`, chargerWithoutDates,config);
+      if(typeof(id) === "number")
+          await axios.patch(`/api/localizations/update/${id}`, chargerWithoutId, config);
+      else{
+          await axios.post(`/api/localizations/add`, chargerWithoutId, config);
+          
       }
-    }catch(e){
+  }catch(e){
       console.error(e);
-    }
+  }
+  
 
   }
+  await loadChargers();
 }
   
 

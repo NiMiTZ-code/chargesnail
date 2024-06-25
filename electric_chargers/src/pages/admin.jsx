@@ -22,8 +22,6 @@ function Admin({ chargers, removeCharger, updateCharger, addCharger, saveCharger
                             <th>Długość geograficzna</th>
                             <th>Aktywny</th>
                             <th>Opis</th>
-                            <th>Początkowa data rezerwacji</th>
-                            <th>Końcowa data rezerwacji</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -97,23 +95,7 @@ function Admin({ chargers, removeCharger, updateCharger, addCharger, saveCharger
                                         value={charger.description} 
                                         onChange={(e) => handleInputChange(charger.id, 'description', e.target.value)} 
                                     />
-                                </td>
-                                <td>
-                                    <input 
-                                        type="datetime-local" 
-                                        className="form-control" 
-                                        value={charger.res_start_date instanceof Date ? charger.res_start_date.toISOString().substring(0, 16) : ''} 
-                                        onChange={(e) => handleInputChange(charger.id, 'res_start_date', new Date(e.target.value))} 
-                                    />
-                                </td>
-                                <td>
-                                    <input 
-                                        type="datetime-local" 
-                                        className="form-control" 
-                                        value={charger.res_end_date instanceof Date ? charger.res_end_date.toISOString().substring(0, 16) : ''} 
-                                        onChange={(e) => handleInputChange(charger.id, 'res_end_date', new Date(e.target.value))} 
-                                    />
-                                </td>
+                                </td>      
                             </tr>
                         ))}
                     </tbody>
