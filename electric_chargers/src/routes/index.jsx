@@ -40,6 +40,10 @@ const Routes = () => {
                 {
                     path: "/admin",
                     element: <Admin />,
+                },
+                {
+                    path: "/home",
+                    element: <Home />,
                 }
             ],
         },

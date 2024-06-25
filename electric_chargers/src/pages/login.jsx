@@ -39,15 +39,19 @@ function Login() {
 
       setToken(res.data.token);
       console.log('Datatoken:'+res.data.token);
-
       //sprawdź czy admin
-      let token = localStorage.getItem('token');
+      var token = sessionStorage.getItem('token');
       var role = JSON.parse(decodeToken(token).role)
 
-      if(role==1)
-        navigate('/admin');
-      if(role!=1)
-        navigate('/uhome');
+      navigate('/home', {
+        state:{user:res.data,isAdmin:(role == 1)}
+      });
+
+
+      //if(role==1)
+      //  navigate('/admin');
+     // if(role!=1)
+      //  navigate('/uhome');
 
       console.log(res.data);
     }catch(e){
