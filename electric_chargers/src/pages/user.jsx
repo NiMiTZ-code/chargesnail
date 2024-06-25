@@ -285,7 +285,7 @@ function User({ user }) {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                             {chargers.map(charger => (
-                                <Marker key={charger.id} position={charger.position} icon={customIcon}>
+                                <Marker key={charger.id} position={[charger.gps_lat, charger.gps_long]} icon={customIcon}>
                                     <Popup>{charger.display_name}</Popup>
                                 </Marker>
                             ))}
