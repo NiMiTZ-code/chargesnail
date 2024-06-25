@@ -15,12 +15,14 @@ const customIcon = new L.Icon({
 function User({ user }) {
     const [editReservation, setEditReservation] = useState(null);
     const [chargers, setChargers] = useState([]);
-    const [selectedCharger, setSelectedCharger] = useState(null);
+    const [selectedCharger, setSelectedCharger] = useState(null); 
+    const [selectedReservation, setSelectedReservation] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [reservations, setReservations] = useState([]);
     const [futureReservations, setFutureReservations] = useState([]);
     const [pastReservations, setPastReservations] = useState([]);
+    
 
     useEffect(() => {
         const loadAvailableChargers = async () => {
@@ -97,7 +99,6 @@ function User({ user }) {
         try {
             await axios.post('/api/reserve/add', {
                 localization_id: selectedCharger,
-                charger_id: selectedCharger,
                 start_date: new Date(startDate),
                 end_date: new Date(endDate)
             }, {
@@ -135,10 +136,13 @@ function User({ user }) {
 
     const handleEditReservation = (reservation) => {
         setEditReservation(reservation);
-        setSelectedCharger(reservation.localization_id);
+        setSelectedReservation(reservation.id);
+        setSelectedCharger(reservation.id)
         setStartDate(new Date(reservation.start_date).toISOString().slice(0, 16));
         setEndDate(new Date(reservation.end_date).toISOString().slice(0, 16));
     };
+
+    
 
     const handleUpdateReservation = async () => {
         if (!selectedCharger || !startDate || !endDate) {
@@ -147,8 +151,8 @@ function User({ user }) {
         }
 
         try {
-            await axios.patch(`/api/reserve/update`, {
-                localization_id: selectedCharger,
+            await axios.patch("/api/reserve/update", {
+                id: selectedReservation ,
                 start_date: new Date(startDate).toISOString(),
                 end_date: new Date(endDate).toISOString()
             }, {
@@ -177,11 +181,47 @@ function User({ user }) {
         }
     };
 
+    const deleteResource = async (resourceId) => {
+        try {
+          const response = await axiosInstance.request({
+            method: 'delete',
+            url: '/resource',
+            data: {
+              id: resourceId
+            },
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          },
+          });
+          console.log('Delete successful:', response.data);
+        } catch (error) {
+          console.error('Error deleting resource:', error);
+        }
+      };
+
+    const handleDeleteReservation = async (reservation) => {
+        try {
+            console.log(reservation.id);
+            console.log(sessionStorage.getItem("token"));
+            await axios.delete("/api/reserve/delete", {
+                id: reservation.id,},
+            {headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                },
+            });
+            alert("Rezerwacja została usunięta");
+            setFutureReservations(futureReservations.filter((res) => res.id !== reservation.id));
+            setReservations(reservations.filter((res) => res.id!== reservation.id));
+            //setPastReservations(pastReservations.filter((res) => res.id !== reservation.id));
+        } catch (e) {
+            console.error("Error deleting reservation:", e);
+        }
+    };
 
 
     return (
         <div className="container mt-4">
-            <h1 className="text-center">Witaj, {sessionStorage.getItem('token')}!</h1>
+            <h1 className="text-center">Witaj, {user?.name || 'Użytkowniku'}!</h1>
 
             <div className="row mt-4">
                 <div className="col-md-6">
@@ -205,7 +245,7 @@ function User({ user }) {
                                                 name="chargerSelect"
                                                 checked={selectedCharger === charger.id}
                                                 onChange={() => handleChargerSelect(charger.id)}
-                                                disabled={!charger.isActive}
+                                                disabled={selectedCharger !== null && selectedCharger !== charger.id}
                                             />
                                         </td>
                                         <td>{charger.display_name}</td>
@@ -220,7 +260,7 @@ function User({ user }) {
                 </div>
                 <div className="col-md-6">
                     <div style={{ height: "300px", width: "100%" }}>
-                        <MapContainer center={[50.2590, 19.0230]} zoom={15} style={{ height: "100%", width: "100%" }}>
+                        <MapContainer center={[50.261, 19.020]} zoom={13} style={{ height: "100%", width: "100%" }}>
                             <TileLayer
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
@@ -266,13 +306,16 @@ function User({ user }) {
                 <div className="col-md-6">
                     <h3>Obecne Rezerwacje</h3>
                     <ul className="list-group">
-                        {futureReservations.map(reservation => (
+                        {futureReservations.map((reservation) => (
                             <li key={reservation.id} className="list-group-item">
                                 Ładowarka: {reservation.localization_id} <br />
                                 Od: {new Date(reservation.start_date).toLocaleString()} <br />
                                 Do: {new Date(reservation.end_date).toLocaleString()} <br />
                                 <button className="btn btn-secondary mt-2" onClick={() => handleEditReservation(reservation)}>
                                     Edytuj
+                                </button>
+                                <button className="btn btn-danger mt-2" onClick={()=> handleDeleteReservation(reservation)}>
+                                    Usuń
                                 </button>
                             </li>
                         ))}
