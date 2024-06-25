@@ -1,128 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import '../styles/user.css';
-// import axios from 'axios';
-
-// function User({ user }) {
-//     const [chargers, setChargers] = useState([]);
-//     const [selectedCharger, setSelectedCharger] = useState(null);
-//     const [reservationTime, setReservationTime] = useState(1);
-
-//     useEffect(() => {
-//         const loadAvailableChargers = async () => {
-//             try {
-//                 const response = await axios.get("/api/localizations", {
-//                     headers: {
-//                         "Authorization": `Bearer ${user.token}`
-//                     }
-//                 });
-//                 setChargers(response.data);
-//             } catch (e) {
-//                 console.error(e);
-//             }
-//         };
-
-//         loadAvailableChargers();
-//     }, [user.token]);
-
-//     const handleChargerSelect = (id) => {
-//         setSelectedCharger(id);
-//     };
-
-//     const handleReservationTimeChange = (e) => {
-//         setReservationTime(parseInt(e.target.value));
-//     };
-
-//     const handleReserve = async () => {
-//         if (!selectedCharger) {
-//             alert("Proszę wybrać ładowarkę do rezerwacji");
-//             return;
-//         }
-
-//         const charger = chargers.find(charger => charger.id === selectedCharger);
-
-//         try {
-//             await axios.patch(`/api/localizations/update/${selectedCharger}`, {
-//                 res_start_date: new Date().toISOString(),
-//                 res_end_date: new Date(Date.now() + reservationTime * 3600000).toISOString(),
-//                 isActive: false
-//             }, {
-//                 headers: {
-//                     "Authorization": `Bearer ${user.token}`
-//                 }
-//             });
-
-//             alert("Rezerwacja została dokonana");
-//             setChargers(chargers.map(c => c.id === selectedCharger ? { ...c, isActive: false } : c));
-//             setSelectedCharger(null);
-//             setReservationTime(1);
-//         } catch (e) {
-//             console.error(e);
-//         }
-//     };
-
-//     return (
-//         <div className="container mt-4">
-//             <h1>Witaj, {user.name}!</h1>
-//             <div className="table-responsive mt-4">
-//                 <table className="table table-bordered table-striped">
-//                     <thead className="thead-dark">
-//                         <tr>
-//                             <th>Wybierz</th>
-//                             <th>Nazwa</th>
-//                             <th>Ulica</th>
-//                             <th>Miasto</th>
-//                             <th>Kod pocztowy</th>
-//                             <th>Szerokość geograficzna</th>
-//                             <th>Długość geograficzna</th>
-//                             <th>Aktywny</th>
-//                         </tr>
-//                     </thead>
-//                     <tbody>
-//                         {chargers.map((charger) => (
-//                             <tr key={charger.id}>
-//                                 <td>
-//                                     <input
-//                                         type="radio"
-//                                         name="chargerSelect"
-//                                         checked={selectedCharger === charger.id}
-//                                         onChange={() => handleChargerSelect(charger.id)}
-//                                         disabled={!charger.isActive}
-//                                     />
-//                                 </td>
-//                                 <td>{charger.display_name}</td>
-//                                 <td>{charger.street}</td>
-//                                 <td>{charger.city}</td>
-//                                 <td>{charger.postal_code}</td>
-//                                 <td>{charger.gps_lat}</td>
-//                                 <td>{charger.gps_long}</td>
-//                                 <td>{charger.isActive ? "Tak" : "Nie"}</td>
-//                             </tr>
-//                         ))}
-//                     </tbody>
-//                 </table>
-//             </div>
-//             <div className="form-group mt-4">
-//                 <label htmlFor="reservationTime">Czas rezerwacji (w godzinach):</label>
-//                 <select
-//                     id="reservationTime"
-//                     className="form-control"
-//                     value={reservationTime}
-//                     onChange={handleReservationTimeChange}
-//                 >
-//                     {[1, 2, 3, 4, 5, 6, 7, 8].map(hours => (
-//                         <option key={hours} value={hours}>{hours} godzina{hours > 1 ? 'y' : ''}</option>
-//                     ))}
-//                 </select>
-//             </div>
-//             <button className="btn btn-primary mt-3" onClick={handleReserve}>Zarezerwuj</button>
-//         </div>
-//     );
-// }
-
-// export default User;
-
-
-//TEST MODE
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -146,18 +21,21 @@ function User({ user }) {
     const [futureReservations, setFutureReservations] = useState([]);
     const [pastReservations, setPastReservations] = useState([]);
 
-
     useEffect(() => {
         const loadAvailableChargers = async () => {
             try {
                 const response = await axios.get("/api/localizations", {
                     headers: {
-                        "Authorization": `Bearer ${user?.token}`
+                        "Authorization": `Bearer ${sessionStorage.getItem('token')}`
                     }
                 });
-                setChargers( response.data );
+                const chargersWithCoords = await Promise.all(response.data.map(async (charger) => {
+                    const coords = await geocodeAddress(`${charger.street}, ${charger.city}`);
+                    return { ...charger, ...coords };
+                }));
+                setChargers(chargersWithCoords);
             } catch (e) {
-                console.error(e);
+                console.error("Error loading chargers:", e);
             }
         };
 
@@ -165,7 +43,7 @@ function User({ user }) {
             try {
                 const response = await axios.get("/api/reserve/past-reservations", {
                     headers: {
-                        "Authorization": `Bearer ${user?.token}`
+                        "Authorization": `Bearer ${sessionStorage.getItem('token')}`
                     }
                 });
                 setReservations(response.data);
@@ -173,13 +51,35 @@ function User({ user }) {
                 setFutureReservations(response.data.filter(res => new Date(res.start_date) > now));
                 setPastReservations(response.data.filter(res => new Date(res.end_date) < now));
             } catch (e) {
-                console.error(e);
+                console.error("Error loading reservations:", e);
             }
         };
 
         loadAvailableChargers();
         loadReservations();
-    }, [user?.token]);
+    }, [sessionStorage.getItem('token')]);
+
+    const geocodeAddress = async (address) => {
+        try {
+            const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+                params: {
+                    q: address,
+                    format: 'json',
+                    addressdetails: 1,
+                    limit: 1
+                }
+            });
+            if (response.data.length > 0) {
+                return {
+                    gps_lat: parseFloat(response.data[0].lat),
+                    gps_long: parseFloat(response.data[0].lon)
+                };
+            }
+        } catch (e) {
+            console.error('Geocoding error:', e);
+        }
+        return { gps_lat: 0, gps_long: 0 };
+    };
 
     const handleChargerSelect = (id) => {
         setSelectedCharger(id);
@@ -196,11 +96,11 @@ function User({ user }) {
         try {
             await axios.post('/api/reserve/add', {
                 charger_id: selectedCharger,
-                start_date: new Date(startDate).toISOString(),
-                end_date: new Date(endDate).toISOString()
+                start_date: new Date(startDate),
+                end_date: new Date(endDate)
             }, {
                 headers: {
-                    "Authorization": `Bearer ${user?.token}`
+                    "Authorization": `Bearer ${sessionStorage.getItem('token')}`
                 }
             });
 
@@ -211,7 +111,7 @@ function User({ user }) {
             setEndDate('');
             const response = await axios.get("/api/reserve/past-reservations", {
                 headers: {
-                    "Authorization": `Bearer ${user?.token}`
+                    "Authorization": `Bearer ${sessionStorage.getItem('token')}`
                 }
             });
             setReservations(response.data);
@@ -219,7 +119,7 @@ function User({ user }) {
             setFutureReservations(response.data.filter(res => new Date(res.start_date) > now));
             setPastReservations(response.data.filter(res => new Date(res.end_date) < now));
         } catch (e) {
-            console.error(e);
+            console.error("Error making reservation:", e);
         }
     };
 
@@ -233,7 +133,7 @@ function User({ user }) {
 
     return (
         <div className="container mt-4">
-            <h1 className="text-center">Witaj, {user?.name}!</h1>
+            <h1 className="text-center">Witaj, {sessionStorage.getItem('token')}!</h1>
 
             <div className="row mt-4">
                 <div className="col-md-6">
