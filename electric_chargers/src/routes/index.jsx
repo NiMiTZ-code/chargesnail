@@ -13,13 +13,9 @@ import Admin from "../pages/admin.jsx";
 const Routes = () => {
     const { token } = useAuth();
 
-    //do tych stron wszyscy mają dostęp
     const routesForPublic = [
-
-
     ];
 
-    //do tych stron mają dostęp autoryzowani użytkownicy
     const routesForAuthenticatedOnly = [
         {
             path: "/",
@@ -49,7 +45,6 @@ const Routes = () => {
         },
     ];
 
-    //do tyych stron mają dostęp tylko nie autoryzowani użytkownicy
     const routesForNotAuthenticatedOnly = [
         {
             path: "/",

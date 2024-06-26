@@ -47,12 +47,6 @@ function Login() {
         state:{user:res.data,isAdmin:(role == 1)}
       });
 
-
-      //if(role==1)
-      //  navigate('/admin');
-     // if(role!=1)
-      //  navigate('/uhome');
-
       console.log(res.data);
     }catch(e){
       console.error(e);

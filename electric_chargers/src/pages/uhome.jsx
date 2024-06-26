@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 
 
 function Uhome(){
-    //var role = localStorage.getItem('role');
     return(
         <>
             <div className="menu">
