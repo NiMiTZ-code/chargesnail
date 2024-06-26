@@ -15,14 +15,14 @@ const customIcon = new L.Icon({
 function User({ user }) {
     const [editReservation, setEditReservation] = useState(null);
     const [chargers, setChargers] = useState([]);
-    const [selectedCharger, setSelectedCharger] = useState(null); 
+    const [selectedCharger, setSelectedCharger] = useState(null);
     const [selectedReservation, setSelectedReservation] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [reservations, setReservations] = useState([]);
     const [futureReservations, setFutureReservations] = useState([]);
     const [pastReservations, setPastReservations] = useState([]);
-    
+
 
     useEffect(() => {
         const loadAvailableChargers = async () => {
@@ -142,7 +142,7 @@ function User({ user }) {
         setEndDate(new Date(reservation.end_date).toISOString().slice(0, 16));
     };
 
-    
+
 
     const handleUpdateReservation = async () => {
         if (!selectedCharger || !startDate || !endDate) {
@@ -152,7 +152,7 @@ function User({ user }) {
 
         try {
             await axios.patch("/api/reserve/update", {
-                id: selectedReservation ,
+                id: selectedReservation,
                 start_date: new Date(startDate).toISOString(),
                 end_date: new Date(endDate).toISOString()
             }, {
@@ -183,40 +183,27 @@ function User({ user }) {
 
     const deleteResource = async (resourceId) => {
         try {
-          const response = await axiosInstance.request({
-            method: 'delete',
-            url: '/resource',
-            data: {
-              id: resourceId
-            },
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-          },
-          });
-          console.log('Delete successful:', response.data);
-        } catch (error) {
-          console.error('Error deleting resource:', error);
-        }
-      };
-
-    /*const handleDeleteReservation = async (reservation) => {
-        try {
-            console.log(reservation.id);
-            console.log(sessionStorage.getItem("token"));
-            await axios.delete("/api/reserve/delete", {
-                id: reservation.id,},
-            {headers: {
+            const response = await axiosInstance.request({
+                method: 'delete',
+                url: '/resource',
+                data: {
+                    id: resourceId
+                },
+                headers: {
                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
                 },
             });
-            alert("Rezerwacja została usunięta");
-            setFutureReservations(futureReservations.filter((res) => res.id !== reservation.id));
-            setReservations(reservations.filter((res) => res.id!== reservation.id));
-            //setPastReservations(pastReservations.filter((res) => res.id !== reservation.id));
-        } catch (e) {
-            console.error("Error deleting reservation:", e);
+            console.log('Delete successful:', response.data);
+        } catch (error) {
+            console.error('Error deleting resource:', error);
         }
-    };*/
+    };
+
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        window.location.href = '/logout';
+    };
+
 
     const handleDeleteReservation = async (reservation) => {
         try {
@@ -225,12 +212,12 @@ function User({ user }) {
             await axios.delete("/api/reserve/delete", {
                 data: { id: reservation.id },
                 headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-                    },
-                });
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                },
+            });
             alert("Rezerwacja została usunięta");
             setFutureReservations(futureReservations.filter((res) => res.id !== reservation.id));
-            setReservations(reservations.filter((res) => res.id!== reservation.id));
+            setReservations(reservations.filter((res) => res.id !== reservation.id));
             //setPastReservations(pastReservations.filter((res) => res.id !== reservation.id));
         } catch (e) {
             console.error("Error deleting reservation:", e);
@@ -240,7 +227,11 @@ function User({ user }) {
 
     return (
         <div className="container mt-4">
-            <h1 className="text-center">Witaj, {user?.name || 'Użytkowniku'}!</h1>
+            <div className="d-flex justify-content-between align-items-center mt-4">
+                <h1>Witaj, {user?.name || 'Użytkowniku'}!</h1>
+                <button className="btn btn-danger" onClick={handleLogout}>Wyloguj</button>
+            </div>
+
 
             <div className="row mt-4">
                 <div className="col-md-6">
@@ -333,7 +324,7 @@ function User({ user }) {
                                 <button className="btn btn-secondary mt-2" onClick={() => handleEditReservation(reservation)}>
                                     Edytuj
                                 </button>
-                                <button className="btn btn-danger mt-2" onClick={()=> handleDeleteReservation(reservation)}>
+                                <button className="btn btn-danger mt-2" onClick={() => handleDeleteReservation(reservation)}>
                                     Usuń
                                 </button>
                             </li>
