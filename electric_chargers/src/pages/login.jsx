@@ -65,7 +65,7 @@ function Login() {
           <div className="login-container">
             <form method="post" onSubmit={(e) => handleSubmit(e)}>
               <div className='loginInput'>
-                <label htmlFor="uname"><b>Nazwa użytkownika</b></label>
+                <label htmlFor="uname"><b>Email</b></label>
                 <input id='logVal' type="text" placeholder="Wprowadź nazwę użytkownika" name="uname" required onChange={(e) => handleEmailChange(e)} />
               </div>
               <div className='loginInput'>
