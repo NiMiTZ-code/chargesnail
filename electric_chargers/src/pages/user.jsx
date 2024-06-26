@@ -199,7 +199,7 @@ function User({ user }) {
         }
       };
 
-    const handleDeleteReservation = async (reservation) => {
+    /*const handleDeleteReservation = async (reservation) => {
         try {
             console.log(reservation.id);
             console.log(sessionStorage.getItem("token"));
@@ -209,6 +209,25 @@ function User({ user }) {
                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
                 },
             });
+            alert("Rezerwacja została usunięta");
+            setFutureReservations(futureReservations.filter((res) => res.id !== reservation.id));
+            setReservations(reservations.filter((res) => res.id!== reservation.id));
+            //setPastReservations(pastReservations.filter((res) => res.id !== reservation.id));
+        } catch (e) {
+            console.error("Error deleting reservation:", e);
+        }
+    };*/
+
+    const handleDeleteReservation = async (reservation) => {
+        try {
+            console.log(reservation.id);
+            console.log(sessionStorage.getItem("token"));
+            await axios.delete("/api/reserve/delete", {
+                data: { id: reservation.id },
+                headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                    },
+                });
             alert("Rezerwacja została usunięta");
             setFutureReservations(futureReservations.filter((res) => res.id !== reservation.id));
             setReservations(reservations.filter((res) => res.id!== reservation.id));
