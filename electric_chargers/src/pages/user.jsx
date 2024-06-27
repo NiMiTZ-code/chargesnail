@@ -23,7 +23,6 @@ function User({ user }) {
     const [futureReservations, setFutureReservations] = useState([]);
     const [pastReservations, setPastReservations] = useState([]);
 
-
     useEffect(() => {
         const loadAvailableChargers = async () => {
             try {
@@ -95,6 +94,10 @@ function User({ user }) {
         }
 
         const charger = chargers.find(charger => charger.id === selectedCharger);
+        if (!charger.isActive) {
+            alert("Nie można zarezerwować nieaktywnej ładowarki");
+            return;
+        }
 
         try {
             await axios.post('/api/reserve/add', {
@@ -137,12 +140,10 @@ function User({ user }) {
     const handleEditReservation = (reservation) => {
         setEditReservation(reservation);
         setSelectedReservation(reservation.id);
-        setSelectedCharger(reservation.id)
+        setSelectedCharger(reservation.localization_id);
         setStartDate(new Date(reservation.start_date).toISOString().slice(0, 16));
         setEndDate(new Date(reservation.end_date).toISOString().slice(0, 16));
     };
-
-
 
     const handleUpdateReservation = async () => {
         if (!selectedCharger || !startDate || !endDate) {
@@ -204,7 +205,6 @@ function User({ user }) {
         window.location.href = '/logout';
     };
 
-
     const handleDeleteReservation = async (reservation) => {
         try {
             console.log(reservation.id);
@@ -218,12 +218,10 @@ function User({ user }) {
             alert("Rezerwacja została usunięta");
             setFutureReservations(futureReservations.filter((res) => res.id !== reservation.id));
             setReservations(reservations.filter((res) => res.id !== reservation.id));
-            //setPastReservations(pastReservations.filter((res) => res.id !== reservation.id));
         } catch (e) {
             console.error("Error deleting reservation:", e);
         }
     };
-
 
     return (
         <div className="container mt-4">
@@ -232,38 +230,37 @@ function User({ user }) {
                 <button className="btn btn-danger" onClick={handleLogout}>Wyloguj</button>
             </div>
 
-
             <div className="row mt-4">
                 <div className="col-md-6">
                     <div className="table-responsive">
                         <table className="table table-bordered table-striped table-hover">
                             <thead className="thead-dark">
-                                <tr>
-                                    <th>Wybierz</th>
-                                    <th>Nazwa</th>
-                                    <th>Ulica</th>
-                                    <th>Miasto</th>
-                                    <th>Aktywny</th>
-                                </tr>
+                            <tr>
+                                <th>Wybierz</th>
+                                <th>Nazwa</th>
+                                <th>Ulica</th>
+                                <th>Miasto</th>
+                                <th>Aktywny</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {chargers.map((charger) => (
-                                    <tr key={charger.id}>
-                                        <td>
-                                            <input
-                                                type="radio"
-                                                name="chargerSelect"
-                                                checked={selectedCharger === charger.id}
-                                                onChange={() => handleChargerSelect(charger.id)}
-                                                disabled={selectedCharger !== null && selectedCharger !== charger.id}
-                                            />
-                                        </td>
-                                        <td>{charger.display_name}</td>
-                                        <td>{charger.street}</td>
-                                        <td>{charger.city}</td>
-                                        <td>{charger.isActive ? "Tak" : "Nie"}</td>
-                                    </tr>
-                                ))}
+                            {chargers.map((charger) => (
+                                <tr key={charger.id}>
+                                    <td>
+                                        <input
+                                            type="radio"
+                                            name="chargerSelect"
+                                            checked={selectedCharger === charger.id}
+                                            onChange={() => handleChargerSelect(charger.id)}
+                                            disabled={!charger.isActive || (selectedCharger !== null && selectedCharger !== charger.id)}
+                                        />
+                                    </td>
+                                    <td>{charger.display_name}</td>
+                                    <td>{charger.street}</td>
+                                    <td>{charger.city}</td>
+                                    <td>{charger.isActive ? "Tak" : "Nie"}</td>
+                                </tr>
+                            ))}
                             </tbody>
                         </table>
                     </div>
