@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
-
+import { useNavigate } from "react-router-dom";
 
 function Admin({ chargers, removeCharger, updateCharger, addCharger, saveChargers }) {
     const handleInputChange = (index, field, value) => {
         updateCharger(index, field, value);
     };
-
+    const navigate = useNavigate();
     return (
         <div className="container mt-4">
+             <div className="d-flex justify-content-end mb-3">
+                <button className="btn btn-danger" onClick={() => { navigate("/logout") }}>Wyloguj</button>
+            </div>
             <div className="table-responsive">
                 <table className="table table-bordered table-striped" style={{ tableLayout: 'auto' }}>
                     <thead className="thead-dark">
@@ -101,8 +104,10 @@ function Admin({ chargers, removeCharger, updateCharger, addCharger, saveCharger
                     </tbody>
                 </table>
             </div>
+            <div>
             <button className="btn btn-primary mt-3 w-50" onClick={addCharger}>Dodaj ładowarkę</button>
             <button className="btn btn-primary mt-3 w-50" onClick={saveChargers}>Zapisz ładowarki</button>
+            </div>
         </div>
     );
 }
