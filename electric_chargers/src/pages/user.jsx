@@ -51,7 +51,7 @@ function User({ user }) {
                 });
                 setReservations(response.data);
                 const now = new Date();
-                setFutureReservations(response.data.filter(res => new Date(res.start_date) > now));
+                setFutureReservations(response.data.filter(res => new Date(res.end_date) > now));
                 setPastReservations(response.data.filter(res => new Date(res.end_date) < now));
             } catch (e) {
                 console.error("Error loading reservations:", e);
