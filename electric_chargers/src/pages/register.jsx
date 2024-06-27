@@ -3,6 +3,7 @@ import "../styles/style.css";
 import "../styles/register.css";
 import validator from 'validator';
 import axios from 'axios';
+import {useNavigate} from "react-router-dom";
 
 function Register() {
 
@@ -10,6 +11,7 @@ function Register() {
   const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -43,6 +45,7 @@ function Register() {
         email: cleanEmail,
         password: cleanPassword
       });
+      navigate('/');
       console.log(res.data);
     }catch(e){
       console.error(e);
