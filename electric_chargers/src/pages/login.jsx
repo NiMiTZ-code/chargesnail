@@ -47,12 +47,6 @@ function Login() {
         state:{user:res.data,isAdmin:(role == 1)}
       });
 
-
-      //if(role==1)
-      //  navigate('/admin');
-     // if(role!=1)
-      //  navigate('/uhome');
-
       console.log(res.data);
     }catch(e){
       console.error(e);
@@ -65,7 +59,7 @@ function Login() {
           <div className="login-container">
             <form method="post" onSubmit={(e) => handleSubmit(e)}>
               <div className='loginInput'>
-                <label htmlFor="uname"><b>Nazwa użytkownika</b></label>
+                <label htmlFor="uname"><b>Email</b></label>
                 <input id='logVal' type="text" placeholder="Wprowadź nazwę użytkownika" name="uname" required onChange={(e) => handleEmailChange(e)} />
               </div>
               <div className='loginInput'>

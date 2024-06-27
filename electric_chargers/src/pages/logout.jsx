@@ -1,8 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../provider/authProvider";
 
-//-------------------DO ZROBIENIA NA TEJ STRONIE:
-//-można ją trochę uładnić
 const Logout = () => {
     const { setToken } = useAuth();
     const navigate = useNavigate();
