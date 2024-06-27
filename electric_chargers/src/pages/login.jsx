@@ -38,6 +38,7 @@ function Login() {
       });
 
       setToken(res.data.token);
+      sessionStorage.setItem('token',res.data.token);
       console.log('Datatoken:'+res.data.token);
       //sprawdź czy admin
       var token = sessionStorage.getItem('token');
